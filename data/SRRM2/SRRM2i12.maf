@@ -1,0 +1,41 @@
+##maf version=1 scoring=roast.v3.3
+a score=0.000000
+s hg38.chr16                        2770200 39 +  90338345 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+s panTro4.chr16                     2840821 39 +  89983829 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i panTro4.chr16                   C 0 C 0
+s panPan1.JH650015                    97831 39 +    110999 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i panPan1.JH650015                C 0 C 0
+s gorGor3.chr16                     2935824 39 +  80971650 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i gorGor3.chr16                   C 0 C 0
+s ponAbe2.chr16                     2943549 39 +  77800216 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i ponAbe2.chr16                   C 0 C 0
+s nomLeu3.chr18                     2778035 39 - 104879549 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i nomLeu3.chr18                   C 0 C 0
+s rheMac3.chr20                    85508340 39 -  88476065 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i rheMac3.chr20                   C 0 C 0
+s macFas5.chr20                    75467530 39 -  78541002 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i macFas5.chr20                   C 0 C 0
+s papAnu2.chr20                    69183755 39 -  71807805 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i papAnu2.chr20                   C 0 C 0
+s chlSab2.chr5                     72828190 39 -  75399963 GGCGGATGGGTGAGTGAGCAGACAAAGGTGGGTCTGAGG
+i chlSab2.chr5                    C 0 C 0
+s nasLar1.chr20                    78896204 39 -  81577475 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i nasLar1.chr20                   C 0 C 0
+s rhiRox1.KN297538v1                1370699 39 +   1485330 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i rhiRox1.KN297538v1              C 0 C 0
+s calJac3.chr12                   118946119 39 - 121768101 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i calJac3.chr12                   C 0 C 0
+s saiBol1.JH378134                  6301182 39 -  22521080 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i saiBol1.JH378134                C 0 C 0
+s tarSyr2.KE942191v1                 159036 39 -    474190 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i tarSyr2.KE942191v1              C 0 C 0
+s micMur1.scaffold_14506              14149 39 +     16144 GGCGGATGGGTGAGTGAGCGGACACAGGTGGGTCTGAGG
+i micMur1.scaffold_14506          C 0 C 0
+s otoGar3.GL873563                  5285269 39 -  14503122 GGCGGATGGGTGAGTGAGCGGACAAAGGTGGGTCTGAGG
+i otoGar3.GL873563                I 104 C 0
+s mm10.chr17                       23823640 37 +  94987271 GGCGGATGGGTGAGT--GCGGACAAAGGTGGGTCTGAGG
+i mm10.chr17                      C 0 C 0
+s canFam3.chr6                     38309487 39 +  77573801 GGCGGATGGGTGAGTGAGCAGACAAAGGTGGGTCTGAGG
+i canFam3.chr6                    C 0 C 0
+e tupBel1.scaffold_143410.1-76701     11695 1260 +     76701 I
+

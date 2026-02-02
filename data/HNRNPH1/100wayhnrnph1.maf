@@ -1,0 +1,367 @@
+##maf version=1 scoring=roast.v3.3
+a score=0.000000
+s hg38.chr5                    179620575  7 + 181538259 ATCT---------TAC
+s panTro4.chr5                 180758649  7 + 182651097 ATCT---------TAC
+i panTro4.chr5                 C 0 C 0
+s gorGor3.chr5                 164179576  7 + 165930986 ATCT---------TAC
+i gorGor3.chr5                 C 0 C 0
+s ponAbe2.chr5                 182242961  7 + 183952662 ATCT---------TAC
+i ponAbe2.chr5                 C 0 C 0
+s nomLeu3.chr2                 161875800  7 - 163208435 ATCT---------TAC
+i nomLeu3.chr2                 C 0 C 0
+s rheMac3.chr6                 178536584  7 + 180491593 ATCT---------TAC
+i rheMac3.chr6                 C 0 C 0
+s macFas5.chr6                 179547924  7 + 181584905 ATCT---------TAC
+i macFas5.chr6                 C 0 C 0
+s papAnu2.chr6                 172833159  7 + 174439528 ATCT---------TAC
+i papAnu2.chr6                 C 0 C 0
+s chlSab2.chr23                 81337318  7 +  82825804 ATCT---------TAC
+i chlSab2.chr23                C 0 C 0
+s calJac3.chr2                  59227873  7 + 204313951 ATCT---------TAC
+i calJac3.chr2                 C 0 C 0
+s saiBol1.JH378300               1012389  7 -   1944256 ATCT---------TAC
+i saiBol1.JH378300             C 0 C 0
+s otoGar3.GL873665               3370249  7 +   4941002 ATCT---------TAC
+i otoGar3.GL873665             C 0 C 0
+s tupChi1.KB320636                488819  7 -   2028832 ATCT---------TAC
+i tupChi1.KB320636             C 0 C 0
+s speTri2.JH393549               1010610  7 -   2148875 ATCT---------TAC
+i speTri2.JH393549             C 0 C 0
+s jacJac1.JH725529                569200  7 -   9247444 ATCT---------TAC
+i jacJac1.JH725529             C 0 C 0
+s micOch1.chr7                  48361508  7 +  85103860 AGCT---------TAC
+i micOch1.chr7                 C 0 C 0
+s criGri1.KE381285                 52866  7 -    904113 AGCT---------TAC
+i criGri1.KE381285             C 0 C 0
+s mesAur1.KB708157               1500608  7 +  19353835 AGCT---------TAC
+i mesAur1.KB708157             C 0 C 0
+s mm10.chr11                    71702255  7 - 122082543 AGCT---------TAC
+i mm10.chr11                   C 0 C 0
+s rn6.chr10                     76753112  7 - 112626471 AGCT---------TAC
+i rn6.chr10                    C 0 C 0
+s hetGla2.JH602046              42545036  7 +  43462546 ATCT---------TAC
+i hetGla2.JH602046             C 0 C 0
+s cavPor3.scaffold_176           1209383  7 -   1593811 AGCT---------TAC
+i cavPor3.scaffold_176         C 0 C 0
+s chiLan1.JH721868              39625316  7 -  40563840 AGCT---------TAC
+i chiLan1.JH721868             C 0 C 0
+s octDeg1.JH651544              18196224  7 -  19401444 AGCT---------TAC
+i octDeg1.JH651544             C 0 C 0
+s oryCun2.chrUn0032              1102088  7 +   2831799 ATCT---------TAC
+i oryCun2.chrUn0032            C 0 C 0
+s ochPri3.JH802219                575582  7 +    811358 ATCT---------TAC
+i ochPri3.JH802219             C 0 C 0
+s susScr3.chr2                  82037575  7 - 162569375 AGCT---------TAC
+i susScr3.chr2                 C 0 C 0
+s vicPac2.KB632448              16365314  7 -  17131269 AGCT---------TAC
+i vicPac2.KB632448             C 0 C 0
+s camFer1.KB016521               1270705  7 -   2056491 AGCT---------TAC
+i camFer1.KB016521             C 0 C 0
+s turTru2.JH472999                162091  7 -    278283 ATCT---------TAC
+i turTru2.JH472999             C 0 C 0
+s orcOrc1.KB317047               2268599  7 +   3326269 ATCT---------TAC
+i orcOrc1.KB317047             C 0 C 0
+s panHod1.KE115360               4403214  7 +   5926152 ATCT---------TAC
+i panHod1.KE115360             C 0 C 0
+s bosTau8.chr7                 111042443  7 - 112638659 ATCT---------TAC
+i bosTau8.chr7                 C 0 C 0
+s oviAri3.chr5                 106510818  7 - 107901688 ATCT---------TAC
+i oviAri3.chr5                 C 0 C 0
+s capHir1.chr7                 105346603  7 - 106547263 ATCT---------TAC
+i capHir1.chr7                 C 0 C 0
+s equCab2.chr14                 91068178  7 -  93904894 ATCT---------TAC
+i equCab2.chr14                C 0 C 0
+s cerSim1.JH767748              27159735  7 -  28607315 ATCT---------TAC
+i cerSim1.JH767748             C 0 C 0
+s felCat8.chrA1                149410461  7 - 240380223 ATCT---------TAC
+i felCat8.chrA1                C 0 C 0
+s canFam3.chr11                 72335459  7 -  74389097 ATCT---------TAC
+i canFam3.chr11                C 0 C 0
+s musFur1.GL896966               8383215  7 -   9572337 ATCT---------TAC
+i musFur1.GL896966             C 0 C 0
+s ailMel1.GL192807.1              987813  7 -   1378233 ATCT---------TAC
+i ailMel1.GL192807.1           C 0 C 0
+s odoRosDiv1.KB229533             586225  7 -   1531753 ATCT---------TAC
+i odoRosDiv1.KB229533          C 0 C 0
+s lepWed1.KB715808                495192  7 -    762832 ATCT---------TAC
+i lepWed1.KB715808             C 0 C 0
+s pteAle1.KB031114               2453989  7 -  18892604 ATCT---------TAC
+i pteAle1.KB031114             C 0 C 0
+s pteVam1.scaffold_5338            57917  7 +    109994 ATCT---------TAC
+i pteVam1.scaffold_5338        C 0 C 0
+s eptFus1.JH977807                144873  7 -   1948612 ATCT---------TAC
+i eptFus1.JH977807             C 0 C 0
+s myoDav1.KB116154               1068430  7 +   2162528 ATCT---------TAC
+i myoDav1.KB116154             C 0 C 0
+s myoLuc2.GL430184                139693  7 +    998528 ATCT---------TAC
+i myoLuc2.GL430184             C 0 C 0
+s eriEur2.JH835616                658234  7 +   2595276 ATCT---------TAC
+i eriEur2.JH835616             C 0 C 0
+s sorAra2.JH798227               1414702  7 +   9097576 ATCT---------TAC
+i sorAra2.JH798227             C 0 C 0
+s conCri1.JH655917                795388  7 -   9309182 GTCT---------TAC
+i conCri1.JH655917             C 0 C 0
+s loxAfr3.scaffold_1           106099892  7 + 111286942 AGCT---------TAC
+i loxAfr3.scaffold_1           C 0 C 0
+s eleEdw1.JH947350               1891176  7 +   5055060 AGCT---------TAC
+i eleEdw1.JH947350             C 0 C 0
+s triMan1.JH594787               2726724  7 +   5373537 AGCT---------TAC
+i triMan1.JH594787             C 0 C 0
+s chrAsi1.JH823535               2803045  7 -   3788456 AGCT---------TAC
+i chrAsi1.JH823535             C 0 C 0
+s echTel2.JH980294              21549090  7 -  97923104 AGCT---------TAC
+i echTel2.JH980294             C 0 C 0
+s oryAfe1.JH864111               1163432  7 +   3185711 CGCT---------TAC
+i oryAfe1.JH864111             C 0 C 0
+s dasNov3.JH567338                386926  7 -    422154 ATCT---------TAC
+i dasNov3.JH567338             C 0 C 0
+s monDom5.chr1                 404146525  7 - 748055161 atct---------tac
+i monDom5.chr1                 C 0 C 0
+s sarHar1.chr1_GL834603_random    821333  7 -   4169199 ATCT---------TAC
+i sarHar1.chr1_GL834603_random C 0 C 0
+s macEug2.GL070044                 10483  7 +     16279 atct---------tac
+i macEug2.GL070044             C 0 C 0
+s ornAna1.chr14                   874430  7 +   2696122 ATCT---------TAC
+i ornAna1.chr14                C 0 C 0
+s colLiv1.KB375405              12058481  7 -  16759274 ATCC---------TCC
+i colLiv1.KB375405             I 22 C 0
+s falChe1.KB398033               6226120  7 -   8713495 ATCC---------TCC
+i falChe1.KB398033             I 22 C 0
+s falPer1.KB391115               4971109  7 -   5174622 ATCC---------TCC
+i falPer1.KB391115             I 22 C 0
+s ficAlb2.chr13                 11522573  7 -  18641552 ATCC---------TCC
+i ficAlb2.chr13                I 22 C 0
+s zonAlb1.KB913053               7126581  7 +  10915959 ATCA---------TCC
+i zonAlb1.KB913053             I 25 C 0
+s geoFor1.JH739898               5505753  7 +  12579740 ATCA---------TCC
+i geoFor1.JH739898             I 24 C 0
+s taeGut2.chr13                  9593814  7 -  16962381 ATCA---------TCC
+i taeGut2.chr13                I 24 C 0
+s pseHum1.KB221205               8630862  7 +  15707096 ATCC---------TCC
+i pseHum1.KB221205             I 106 C 0
+s melUnd1.JH556582               6703745  7 -   9133399 ATCC---------TCC
+i melUnd1.JH556582             I 22 C 0
+s araMac1.AOUJ01059032              4335  7 +      6151 ATCC---------TCC
+i araMac1.AOUJ01059032         I 21 C 0
+s anaPla1.KB743585                159115  7 -    400683 aaaa---------tag
+i anaPla1.KB743585             I 2 C 0
+s galGal4.chr6                  24783924  7 -  34951654 atac---------ttg
+i galGal4.chr6                 I 6 C 0
+s melGal1.chr8                  11727586  1 +  38656188 A---------------
+i melGal1.chr8                 I 12 C 0
+s cheMyd1.KB598657                964692  7 +   3580019 GCTC---------AAC
+i cheMyd1.KB598657             I 4 C 0
+s chrPic2.chr8                   4551495  7 +  51558079 GCTC---------AAC
+i chrPic2.chr8                 I 4 C 0
+s pelSin1.JH224652               1093252  7 +   7765786 GCTC---------AAG
+i pelSin1.JH224652             I 4 C 0
+s apaSpi1.KB928629                 70933  7 +   5853239 ATAC---------AAT
+i apaSpi1.KB928629             I 3 C 0
+s anoCar2.chr2                  59200649  7 - 199619895 ATct---------act
+i anoCar2.chr2                 C 0 C 0
+s latCha1.JH128201                412468 16 -    535429 ATATAGTTAGTACTGC
+i latCha1.JH128201             C 0 C 0
+e fr3.chr14                      6019170 691 -  12328026 I
+e astMex1.KB882261                 36009 57 -   1545987 I
+e petMar2.GL481431                  9978 1964 +     22025 I
+e gasAcu1.chrIV                 19348513 662 -  32632948 I
+e takFla1.KE120704                 68174 691 -    959991 I
+e tetNig2.chr1                  20557962 754 -  22981688 I
+e punNye1.JH419206               7952492 1064 +  12616905 I
+e mayZeb1.JH720499               9738305 1061 -  12277486 I
+e hapBur1.JH425413               1100530 1059 -   1942079 I
+e neoBri1.JH422273              12348814 156 +  23840500 I
+e oreNil2.chrLG2                 2724280 1063 -  25048291 I
+e amaVit1.KB289737                 16330 1381 -     20042 I
+e oryLat2.chr3                  13416444 22 -  36623554 I
+e xipMac1.JH556664               2331504 1466 -   6931777 I
+e lepOcu1.chrLG5                18120064 450 +  51417047 I
+e allMis1.JH733054                651147 31 -    935678 I
+e gadMor1.HE569754               1821874 555 +   4999318 I
+e danRer10.chr13                29043816 29 -  51780250 I
+e xenTro7.KB021657              89319959  0 - 124127367 C
+
+a score=0.000000
+s hg38.chr5                    179620582 28 + 181538259 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AC
+s panTro4.chr5                 180758656 28 + 182651097 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AC
+i panTro4.chr5                 C 0 C 0
+s gorGor3.chr5                 164179583 28 + 165930986 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AC
+i gorGor3.chr5                 C 0 C 0
+s ponAbe2.chr5                 182242968 28 + 183952662 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AC
+i ponAbe2.chr5                 C 0 C 0
+s nomLeu3.chr2                 161875807 32 - 163208435 CTTT-----------------------A---ACTTG-AGGC--ACTT----AGCT-GGACACCAAC
+i nomLeu3.chr2                 C 0 C 0
+s rheMac3.chr6                 178536591 28 + 180491593 CTTT-----------------------A---ACGTG-AAGT--ACTT----AGCT-GGAC----AC
+i rheMac3.chr6                 C 0 C 0
+s macFas5.chr6                 179547931 28 + 181584905 CTTT-----------------------A---ACGTG-AAGT--ACTT----AGCT-GGAC----AC
+i macFas5.chr6                 C 0 C 0
+s papAnu2.chr6                 172833166 28 + 174439528 CTTT-----------------------A---ACGTG-AAGT--ACTT----AGCT-GGAC----AC
+i papAnu2.chr6                 C 0 C 0
+s chlSab2.chr23                 81337325 28 +  82825804 CTTT-----------------------A---ACGTG-AAGT--ACTT----AGCT-GGAC----AC
+i chlSab2.chr23                C 0 C 0
+s calJac3.chr2                  59227880 28 + 204313951 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AG
+i calJac3.chr2                 C 0 C 0
+s saiBol1.JH378300               1012396 28 -   1944256 CTTT-----------------------A---ACTTG-AGGT--ACTT----AGCT-GGAC----AG
+i saiBol1.JH378300             C 0 C 0
+s otoGar3.GL873665               3370256 26 +   4941002 CTTT-----------------------A---AGTTG-GAGT--ACTT----TGCT-GAAT------
+i otoGar3.GL873665             C 0 C 0
+s tupChi1.KB320636                488826 28 -   2028832 CTTC-----------------------A---ACGTG-AAGT--ACTT----TGCT-GAAC----AG
+i tupChi1.KB320636             C 0 C 0
+s speTri2.JH393549               1010617 28 -   2148875 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-AAAC----AG
+i speTri2.JH393549             C 0 C 0
+s jacJac1.JH725529                569207 27 -   9247444 CTTT-----------------------A---ATTTG-AAGG--AGTC----TGCT-AAG-----AG
+i jacJac1.JH725529             C 0 C 0
+s micOch1.chr7                  48361515 28 +  85103860 CTTT-----------------------A---ACATG-AAGT--ACTT----TGCT-AAAC----AG
+i micOch1.chr7                 C 0 C 0
+s criGri1.KE381285                 52873 28 -    904113 CTTT-----------------------A---ACTTG-AAGT--ATTT----TGCT-AAAC----AG
+i criGri1.KE381285             C 0 C 0
+s mesAur1.KB708157               1500615 28 +  19353835 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-AAAC----AG
+i mesAur1.KB708157             C 0 C 0
+s mm10.chr11                    71702262 28 - 122082543 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-AAAC----AG
+i mm10.chr11                   C 0 C 0
+s rn6.chr10                     76753119 28 - 112626471 CTTT-----------------------A---ACTTG-CAGT--ACTT----TGCT-AAAC----AG
+i rn6.chr10                    C 0 C 0
+s hetGla2.JH602046              42545043 28 +  43462546 CTTT-----------------------A---ACTTG-AAGT--ACTT----TACT-AAGC----AG
+i hetGla2.JH602046             C 0 C 0
+s cavPor3.scaffold_176           1209390 27 -   1593811 CTTT-----------------------A---A-TTG-AAAT--ACTC----TGCT-AAAC----AG
+i cavPor3.scaffold_176         C 0 C 0
+s chiLan1.JH721868              39625323 28 -  40563840 CTTT-----------------------A---ACTTG-AAGT--ACTC----TGCT-AAAC----AG
+i chiLan1.JH721868             C 0 C 0
+s octDeg1.JH651544              18196231 28 -  19401444 CTTT-----------------------A---ACTTG-AAGT--ACTC----TGCC-AAAC----AG
+i octDeg1.JH651544             C 0 C 0
+s oryCun2.chrUn0032              1102095 28 +   2831799 CTTT-----------------------C---ATTTG-AAGT--ACTT----TGCT-GAAC----AG
+i oryCun2.chrUn0032            C 0 C 0
+s ochPri3.JH802219                575589 28 +    811358 CTTT-----------------------C---CCTGT-AAGT--ACTT----TGCT-GAAC----AG
+i ochPri3.JH802219             C 0 C 0
+s susScr3.chr2                  82037582 28 - 162569375 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i susScr3.chr2                 C 0 C 0
+s vicPac2.KB632448              16365321 28 -  17131269 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGTT-GAAC----AG
+i vicPac2.KB632448             C 0 C 0
+s camFer1.KB016521               1270712 28 -   2056491 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGTT-GAAC----AG
+i camFer1.KB016521             C 0 C 0
+s turTru2.JH472999                162098 28 -    278283 CTTT-----------------------A---ACTTG-AAGT--ACTT----AGCT-GTAC----AG
+i turTru2.JH472999             C 0 C 0
+s orcOrc1.KB317047               2268606 28 +   3326269 CTTT-----------------------A---ACTTG-AAGT--ACTT----AGCT-GTAC----AG
+i orcOrc1.KB317047             C 0 C 0
+s panHod1.KE115360               4403221 28 +   5926152 CTTT-----------------------A---ACGTG-AAGC--ATTT----TGCT-GAAC----AG
+i panHod1.KE115360             C 0 C 0
+s bosTau8.chr7                 111042450 28 - 112638659 CTTT-----------------------A---ATGTG-AAGT--ATTT----TGCT-GAAC----AG
+i bosTau8.chr7                 C 0 C 0
+s oviAri3.chr5                 106510825 28 - 107901688 CTTT-----------------------A---AGGTG-AAGC--ATTT----TGCT-GAAC----AG
+i oviAri3.chr5                 C 0 C 0
+s capHir1.chr7                 105346610 28 - 106547263 CTTT-----------------------A---ACGTG-AAGC--ATTT----TGCT-GAAC----AG
+i capHir1.chr7                 C 0 C 0
+s equCab2.chr14                 91068185 30 -  93904894 CTTT-----------------------A---ACTTG-CAGTACACTT----TGCT-GAAC----AG
+i equCab2.chr14                C 0 C 0
+s cerSim1.JH767748              27159742 28 -  28607315 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i cerSim1.JH767748             C 0 C 0
+s felCat8.chrA1                149410468 28 - 240380223 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i felCat8.chrA1                C 0 C 0
+s canFam3.chr11                 72335466 28 -  74389097 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i canFam3.chr11                C 0 C 0
+s musFur1.GL896966               8383222 28 -   9572337 CTTT-----------------------A---CCTTG-AAGT--ACCT----TGCT-GAAC----AG
+i musFur1.GL896966             C 0 C 0
+s ailMel1.GL192807.1              987820 28 -   1378233 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i ailMel1.GL192807.1           C 0 C 0
+s odoRosDiv1.KB229533             586232 26 -   1531753 CTTT-----------------------A---ACTTG---GT--ACTT----TGCT-GAAC----AG
+i odoRosDiv1.KB229533          C 0 C 0
+s lepWed1.KB715808                495199 25 -    762832 CTTT---------------------------ACTTG---GT--ACTT----TGCT-GAAC----AG
+i lepWed1.KB715808             C 0 C 0
+s pteAle1.KB031114               2453996 28 -  18892604 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i pteAle1.KB031114             C 0 C 0
+s pteVam1.scaffold_5338            57924 28 +    109994 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i pteVam1.scaffold_5338        C 0 C 0
+s eptFus1.JH977807                144880 28 -   1948612 CTGT-----------------------A---ACGTG-AAGT--ACTC----TGCT-GCAC----AG
+i eptFus1.JH977807             C 0 C 0
+s myoDav1.KB116154               1068437 28 +   2162528 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i myoDav1.KB116154             C 0 C 0
+s myoLuc2.GL430184                139700 28 +    998528 CTTT-----------------------A---ACTTG-AAGT--ACTT----TGCT-GAAC----AG
+i myoLuc2.GL430184             C 0 C 0
+s eriEur2.JH835616                658241 28 +   2595276 CTTA-----------------------A---ACTTG-AAGC--ACTT----TGCT-GAAC----AA
+i eriEur2.JH835616             C 0 C 0
+s sorAra2.JH798227               1414709 32 +   9097576 CTTT-----------------------ACTTACTTTCAAAT--ATAT----TGCT-CAAC----TG
+i sorAra2.JH798227             C 0 C 0
+s conCri1.JH655917                795395 28 -   9309182 CTTT-----------------------A---ACTTGGAAGT--ACTT----TTCT--GAC----AG
+i conCri1.JH655917             C 0 C 0
+s loxAfr3.scaffold_1           106099899 25 + 111286942 CTTT-----------------------A---ACTTG-GAGT--ACTT----TGCT-G-------AA
+i loxAfr3.scaffold_1           C 0 C 0
+s eleEdw1.JH947350               1891183 25 +   5055060 CTTT-----------------------A---ACTTG-GAGT--ACTT----TCCT-G-------AA
+i eleEdw1.JH947350             C 0 C 0
+s triMan1.JH594787               2726731 28 +   5373537 CTTT-----------------------A---ACTTG-GAGT--ACTT----TGCT-GAAC----AA
+i triMan1.JH594787             C 0 C 0
+s chrAsi1.JH823535               2803052 28 -   3788456 CTTT-----------------------A---ACTTG-GAGT--ACTT----TGCT-AAAC----AG
+i chrAsi1.JH823535             C 0 C 0
+s echTel2.JH980294              21549097 28 -  97923104 CTTT-----------------------A---AA-TG-GAGA--ACTC----TGCTAAAAC----AG
+i echTel2.JH980294             C 0 C 0
+s oryAfe1.JH864111               1163439 28 +   3185711 CTTT-----------------------A---ACTTG-GAGT--ATTT----TGCT-GAAC----AG
+i oryAfe1.JH864111             C 0 C 0
+s dasNov3.JH567338                386933 28 -    422154 CTTT-----------------------A---AATTG-AAGT--ACTT----TGCT-CAAT----AG
+i dasNov3.JH567338             C 0 C 0
+s monDom5.chr1                 404146532 30 - 748055161 ctta---------------------taa---acttg-aggt--acta----tgct-gaac----ag
+i monDom5.chr1                 C 0 C 0
+s sarHar1.chr1_GL834603_random    821340 30 -   4169199 CTTA---------------------TAA---ACTTG-AGGT--ACTA----TGCT-GAAC----AG
+i sarHar1.chr1_GL834603_random C 0 C 0
+s macEug2.GL070044                 10490 30 +     16279 ctta---------------------taa---acttg-aggt--acta----tgct-gaac----ag
+i macEug2.GL070044             C 0 C 0
+s ornAna1.chr14                   874437 30 +   2696122 CTTG---------------------TGA---ACTTG-AGGT--ACTA----TGCT-GAAC----AG
+i ornAna1.chr14                C 0 C 0
+s colLiv1.KB375405              12058488 16 -  16759274 CATC------------------------------TG-AATT---------------GGTC----AC
+i colLiv1.KB375405             C 0 C 0
+s falChe1.KB398033               6226127 16 -   8713495 CAGC------------------------------TG-AAAT---------------GTTC----Gc
+i falChe1.KB398033             C 0 C 0
+s falPer1.KB391115               4971116 16 -   5174622 CAGC------------------------------TG-AAAT---------------GTTC----GC
+i falPer1.KB391115             C 0 C 0
+s ficAlb2.chr13                 11522580 16 -  18641552 CA------------------------------CATG-AACT---------------GTTC----AT
+i ficAlb2.chr13                C 0 C 0
+s zonAlb1.KB913053               7126588 41 +  10915959 AAGG--CCAGGGGTGGAAGCAGCTTCCC---ACATG-AACT---------------GTTC----AG
+i zonAlb1.KB913053             C 0 C 0
+s geoFor1.JH739898               5505760 41 +  12579740 AAGG--CCAGGGGTGGAAGTAGCCTCCC---ACATG-AACT---------------GTTC----AG
+i geoFor1.JH739898             C 0 C 0
+s taeGut2.chr13                  9593821 41 -  16962381 AAGG--CTGGGGGTGGAAGTAGACTGCC---ACATG-AACT---------------GTTC----GG
+i taeGut2.chr13                C 0 C 0
+s pseHum1.KB221205               8630869 16 +  15707096 CACA------------------------------TG-AAAT---------------ATTC----AG
+i pseHum1.KB221205             C 0 C 0
+s melUnd1.JH556582               6703752 17 -   9133399 CA----CCTGAACTG-------------------TT-CACT-------------------------
+i melUnd1.JH556582             C 0 C 0
+s araMac1.AOUJ01059032              4342 17 +      6151 CA----CCTGAACTG-------------------TT-CACT-------------------------
+i araMac1.AOUJ01059032         C 0 C 0
+s anaPla1.KB743585                159122 16 -    400683 cagc--G---------------------------TG-AACT---------------AGCT----A-
+i anaPla1.KB743585             C 0 C 0
+s galGal4.chr6                  24783931 16 -  34951654 tttt--c---------------------------tg-tttt---------------aact----a-
+i galGal4.chr6                 C 0 C 0
+s melGal1.chr8                  11727587  8 +  38656188 --------------------------------------TTT---------------AACC----A-
+i melGal1.chr8                 C 0 C 0
+s allMis1.JH733054                651178 16 -    935678 ---------------------------T---ACAAG-AATT---------------TTAA----AC
+i allMis1.JH733054             I 31 C 0
+s cheMyd1.KB598657                964699 45 +   3580019 CATTTTTATGTGCTCAACTGAGCAGCAT---GTGTG-GAAT---------------GGCTAA--AA
+i cheMyd1.KB598657             C 0 C 0
+s chrPic2.chr8                   4551502 45 +  51558079 CATTTTTATGTGCTCGACTGAGCAGCAT---GTGTG-GAAT---------------GGCTAA--AA
+i chrPic2.chr8                 C 0 C 0
+s pelSin1.JH224652               1093259 43 +   7765786 CATG--TATGTGCTTGACTGAGCAGCAT---GAGTG-GAAT---------------GGCTAG--AA
+i pelSin1.JH224652             C 0 C 0
+s apaSpi1.KB928629                 70940 31 +   5853239 CTTG-------ACTTTTCTATGGAGC-T---AAGTA-AAAC-----------------------AA
+i apaSpi1.KB928629             C 0 C 0
+s anoCar2.chr2                  59200656 23 - 199619895 tttc--------------------tttt---taatg-tatt---------------aatC----CA
+i anoCar2.chr2                 C 0 C 0
+s latCha1.JH128201                412484 30 -    535429 CATC-----------------------A---GACCA-CCAT--AACT--GATGCT-GGTC----AA
+i latCha1.JH128201             C 0 C 0
+s oryLat2.chr3                  13416466 31 -  36623554 -TTT-----------------------T---ACCTG-AAAA--AATTCAGCCTTT-TAAC----AG
+i oryLat2.chr3                 I 22 I 3
+e fr3.chr14                      6019170 691 -  12328026 I
+e astMex1.KB882261                 36009 57 -   1545987 I
+e petMar2.GL481431                  9978 1964 +     22025 I
+e gasAcu1.chrIV                 19348513 662 -  32632948 I
+e takFla1.KE120704                 68174 691 -    959991 I
+e tetNig2.chr1                  20557962 754 -  22981688 I
+e punNye1.JH419206               7952492 1064 +  12616905 I
+e mayZeb1.JH720499               9738305 1061 -  12277486 I
+e hapBur1.JH425413               1100530 1059 -   1942079 I
+e neoBri1.JH422273              12348814 156 +  23840500 I
+e oreNil2.chrLG2                 2724280 1063 -  25048291 I
+e amaVit1.KB289737                 16330 1381 -     20042 I
+e xipMac1.JH556664               2331504 1466 -   6931777 I
+e lepOcu1.chrLG5                18120064 450 +  51417047 I
+e gadMor1.HE569754               1821874 555 +   4999318 I
+e danRer10.chr13                29043816 29 -  51780250 I
+e xenTro7.KB021657              89319959  0 - 124127367 C
+

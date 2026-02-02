@@ -1,0 +1,300 @@
+---
+title: "SRRM2 52nt Multiple Sequence Alignment"
+author: "Analysis"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
+    theme: flatly
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    warning = FALSE,
+    message = FALSE,
+    fig.width = 14,
+    fig.height = 12
+)
+```
+
+# Load Libraries
+
+```{r load-libraries}
+# Load packages
+# Load ggplot2 first to ensure compatibility
+library(ggplot2)
+# Load ggtree after ggplot2
+library(ggtree)
+library(ape)
+library(ggmsa)
+library(ggnewscale) # For new_scale_color() to add multiple color scales
+
+assign(
+    "is.waive",
+    ggforce:::is.waive,
+    envir = .GlobalEnv
+)
+```
+
+# Define File Paths
+
+```{r define-paths}
+# Base WSL path
+base_wsl_path <- "\\\\wsl.localhost/Ubuntu/home/mikej10/advbfx"
+
+# Directory containing extracted files
+extracted_dir <- file.path(base_wsl_path, "intronretention", "extracted_regions")
+
+# Reference directory
+ref_dir <- file.path(base_wsl_path, "reference", "phastCons100way")
+
+# 100-way 52nt alignment FASTA file (RNA version with common names)
+srrm2_intron12_100way_52nt_fasta <- file.path(extracted_dir, "100way52ntSRRMI12_RNA_commonNames.fa")
+
+# Phylogenetic tree file (using common names version)
+tree_file <- file.path(base_wsl_path, "intronretention", "hg38.100way.commonNames.nh")
+
+# Tree to clade mapping file (pre-computed mapping)
+tree_clade_mapping_file <- file.path(base_wsl_path, "intronretention", "tree_to_clade_mapping.tsv")
+
+# SpliceAI predictions file
+spliceai_file <- file.path(base_wsl_path, "intronretention", "SRRM2", "spliceinfsrrm2.tsv")
+
+# Missing species (those not present in the FASTA file)
+missing_species <- c(
+    "allMis1", "amaVit1", "anaPla1", "anoCar2", "apaSpi1", "araMac1", "astMex1",
+    "colLiv1", "danRer10", "falChe1", "falPer1", "ficAlb2", "fr3", "gadMor1",
+    "galGal4", "gasAcu1", "geoFor1", "hapBur1", "latCha1", "lepOcu1", "macEug2",
+    "mayZeb1", "melGal1", "melUnd1", "neoBri1", "oreNil2", "ornAna1", "oryLat2",
+    "pelSin1", "petMar2", "pseHum1", "punNye1", "sarHar1", "taeGut2", "takFla1",
+    "tetNig2", "xenTro7", "xipMac1", "zonAlb1"
+)
+```
+
+# 100-Way 52nt Alignment with Highlighted Regions
+
+```{r srrm2-intron12-100way-52nt-alignment-highlighted, fig.height=12}
+# Create base alignment
+p <- ggmsa(
+    srrm2_intron12_100way_52nt_fasta,
+    char_width = 0.6,
+    seq_name = TRUE,
+    consensus_views = TRUE,
+    color = "Chemistry_NT"
+)
+
+# Get the number of sequences
+seq_data <- readLines(srrm2_intron12_100way_52nt_fasta)
+seq_count <- sum(grepl("^>", seq_data))
+
+cat("Number of sequences in 100-way 52nt alignment:", seq_count, "\n")
+
+# Add highlighting rectangles
+# First highlight: positions 10-14
+# Second highlight: positions 40-44
+p <- p +
+    annotate("rect",
+        xmin = 10 - 0.5, xmax = 15 + 0.5,
+        ymin = -Inf, ymax = Inf,
+        alpha = 0.2, fill = "yellow", color = "orange", linewidth = 0.8
+    ) +
+    annotate("rect",
+        xmin = 40 - 0.5, xmax = 45 + 0.5,
+        ymin = -Inf, ymax = Inf,
+        alpha = 0.2, fill = "cyan", color = "blue", linewidth = 0.8
+    ) +
+    annotate("text",
+        x = 12.5, y = seq_count + 0.5, label = "208-213",
+        color = "darkorange", fontface = "bold", size = 3.5
+    ) +
+    annotate("text",
+        x = 42.5, y = seq_count + 0.5, label = "238-243",
+        color = "darkblue", fontface = "bold", size = 3.5
+    )
+
+print(p)
+```
+
+# Phylogenetic Tree with Highlighted Missing Species
+
+```{r phylogenetic-tree, fig.height=14, fig.width=12}
+# Load tree to clade mapping (pre-computed)
+tree_clade_map <- read.table(
+    tree_clade_mapping_file,
+    header = TRUE,
+    sep = "\t",
+    stringsAsFactors = FALSE,
+    quote = "",
+    comment.char = ""
+)
+
+# Read the phylogenetic tree (using common names)
+tree <- read.tree(tree_file)
+
+# Create lookup for tree names to clades/species_id
+tree_name_to_clade <- setNames(tree_clade_map$clade, tree_clade_map$tree_name)
+tree_name_to_species_id <- setNames(tree_clade_map$species_id, tree_clade_map$tree_name)
+
+# Map tree tip labels to clades using the pre-computed mapping
+tip_to_clade <- tree_name_to_clade[tree$tip.label]
+tip_to_species_id <- tree_name_to_species_id[tree$tip.label]
+names(tip_to_clade) <- tree$tip.label
+names(tip_to_species_id) <- tree$tip.label
+
+# Map missing species IDs to tree names for highlighting
+missing_tree_names <- character()
+for (species_id in missing_species) {
+    matches <- tree_clade_map$tree_name[tree_clade_map$species_id == species_id & tree_clade_map$species_id != ""]
+    if (length(matches) > 0) {
+        missing_tree_names <- c(missing_tree_names, matches)
+    }
+}
+
+# Load SpliceAI predictions
+spliceai_data <- read.table(
+    spliceai_file,
+    header = TRUE,
+    sep = "\t",
+    stringsAsFactors = FALSE,
+    quote = "",
+    comment.char = "",
+    strip.white = TRUE
+)
+
+# Clean species_id (remove leading/trailing whitespace) and remove any empty rows
+spliceai_data$genome_name <- trimws(spliceai_data$genome_name)
+spliceai_data <- spliceai_data[spliceai_data$genome_name != "" & !is.na(spliceai_data$genome_name), ]
+
+# Create lookup: species_id -> max_donor_prob (using genome_name column)
+species_to_spliceai <- setNames(spliceai_data$max_donor_probability, spliceai_data$genome_name)
+
+# Map spliceai data to tree names via species_id
+# First, get species_id for each tree tip
+tip_species_ids <- tip_to_species_id[tree$tip.label]
+tip_spliceai_signal <- species_to_spliceai[tip_species_ids]
+names(tip_spliceai_signal) <- tree$tip.label
+
+# Format spliceai signal for display (round to 4 decimal places, leave NA as blank)
+tip_spliceai_label <- ifelse(
+    is.na(tip_spliceai_signal),
+    "",
+    sprintf("%.4f", tip_spliceai_signal)
+)
+
+# Create data frame for tip labels with missing status, clade, and spliceai signal
+tip_data <- data.frame(
+    label = tree$tip.label,
+    clade = as.character(tip_to_clade),
+    species_id = as.character(tip_to_species_id),
+    missing = tree$tip.label %in% missing_tree_names,
+    group = as.character(tip_to_clade),
+    spliceai_signal = tip_spliceai_signal,
+    spliceai_label = tip_spliceai_label,
+    stringsAsFactors = FALSE
+)
+tip_data$group[is.na(tip_data$group) | tip_data$group == ""] <- "Unknown"
+
+# Create tip labels with spliceai annotation (leave blank if no spliceai data)
+tip_data$tip_label_with_spliceai <- ifelse(
+    tip_data$spliceai_label == "" | is.na(tip_data$spliceai_label),
+    tip_data$label,
+    paste0(tip_data$label, " (", tip_data$spliceai_label, ")")
+)
+
+# Define color scheme for clades
+clade_colors <- c(
+    "Primate" = "#d95f02",
+    "Euarchontoglires" = "#1b9e77",
+    "Laurasiatheria" = "#7570b3",
+    "Afrotheria" = "#e7298a",
+    "Mammal" = "#66a61e",
+    "Aves" = "#e6ab02",
+    "Sarcopterygii" = "#a6761d",
+    "Fish" = "#666666",
+    "Unknown" = "gray50"
+)
+
+# Get MRCA nodes for each clade (needed for plots)
+clade_nodes <- list()
+unique_clades <- unique(tip_data$group[tip_data$group != "Unknown"])
+for (clade_name in unique_clades) {
+    clade_species <- tip_data$label[tip_data$group == clade_name]
+    if (length(clade_species) >= 2) {
+        clade_node <- ape::getMRCA(tree, clade_species)
+        clade_nodes[[clade_name]] <- clade_node
+    }
+}
+```
+
+# Plot 1: Colored tips and branches by clade
+
+```{r plot1-colored-branches, fig.height=14, fig.width=12}
+p1 <- ggtree(tree, layout = "slanted", aes(color = group)) %<+% tip_data +
+    theme_tree2() +
+    scale_color_manual(
+        values = clade_colors,
+        name = "Clade",
+        na.value = "gray50"
+    ) +
+    new_scale_color() +
+    geom_tiplab(aes(color = missing, label = tip_label_with_spliceai), size = 2.5, show.legend = FALSE, offset = 0.001) +
+    scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red"), guide = "none")
+
+print(p1)
+```
+
+# Plot 2: Background highlighting by clade
+
+```{r plot2-background-highlight, fig.height=14, fig.width=12}
+p2 <- ggtree(tree, layout = "slanted") %<+% tip_data
+
+# Add background highlighting for each clade
+highlight_colors <- c(
+    "Primate" = "#d95f02",
+    "Euarchontoglires" = "#1b9e77",
+    "Laurasiatheria" = "#7570b3",
+    "Afrotheria" = "#e7298a",
+    "Mammal" = "#66a61e",
+    "Aves" = "#e6ab02",
+    "Sarcopterygii" = "#a6761d",
+    "Fish" = "#666666"
+)
+
+# Add highlights
+for (clade_name in names(clade_nodes)) {
+    if (clade_name %in% names(highlight_colors)) {
+        p2 <- p2 + geom_hilight(
+            node = clade_nodes[[clade_name]],
+            fill = highlight_colors[[clade_name]],
+            alpha = 0.2
+        )
+    }
+}
+
+# Add tip labels colored by missing status with spliceai annotation
+p2 <- p2 + geom_tiplab(aes(color = missing, label = tip_label_with_spliceai), size = 2.5, show.legend = FALSE, offset = 0.001) +
+    scale_color_manual(values = c("FALSE" = "black", "TRUE" = "red"))
+
+print(p2)
+```
+
+Summary
+
+```{r summary-info}
+cat("\n=== Summary ===\n")
+cat("Total species in tree:", length(tree$tip.label), "\n")
+cat("Species with clade mappings:", sum(!is.na(tip_to_clade) & tip_to_clade != ""), "\n")
+cat("Missing species (highlighted in red):", sum(tip_data$missing), "\n")
+cat("Species present in FASTA:", sum(!tip_data$missing), "\n")
+cat("\n=== SpliceAI Predictions ===\n")
+cat("Species with SpliceAI predictions:", sum(!is.na(tip_data$spliceai_signal)), "\n")
+cat("Species without SpliceAI predictions:", sum(is.na(tip_data$spliceai_signal)), "\n")
+if (sum(!is.na(tip_data$spliceai_signal)) > 0) {
+    cat("Mean SpliceAI signal:", sprintf("%.4f", mean(tip_data$spliceai_signal, na.rm = TRUE)), "\n")
+    cat("Max SpliceAI signal:", sprintf("%.4f", max(tip_data$spliceai_signal, na.rm = TRUE)), "\n")
+    cat("Min SpliceAI signal:", sprintf("%.4f", min(tip_data$spliceai_signal, na.rm = TRUE)), "\n")
+}
+```
