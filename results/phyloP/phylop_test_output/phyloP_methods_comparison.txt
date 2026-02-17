@@ -1,0 +1,52 @@
+phyloP Method Comparison: SPH vs LRT
+
+File: HNRNPH1_179620582.maf
+
+=== SPH Method (Subtree Posterior Probability) ===
+Command: phyloP --method SPH --mode CONACC --msa-format MAF --wig-scores
+Output: HNRNPH1_179620582.phylop
+
+Characteristics:
+- Value range: -309.331 to 999999999.000
+- Missing data: 999999999.000
+- Large magnitude values (hundreds)
+- Scores represent posterior probabilities transformed to log scale
+- Higher positive values = stronger conservation
+- Lower negative values = stronger acceleration
+
+Example values:
+  309.331  (very high conservation)
+  -309.331 (very high acceleration)
+  999999999.000 (missing data/gap)
+
+=== LRT Method (Likelihood Ratio Test) ===
+Command: phyloP --method LRT --mode CONACC --msa-format MAF --wig-scores
+Output: HNRNPH1_179620582_LRT.phylop
+
+Characteristics:
+- Value range: -5.241 to 11.293
+- Smaller magnitude values (typically -10 to +15)
+- Scores represent log-likelihood ratios
+- Higher positive values = stronger conservation
+- Lower negative values = stronger acceleration
+- More interpretable range for statistical analysis
+
+Example values:
+  11.293  (high conservation)
+  -5.241  (moderate acceleration)
+  8.839   (moderate-high conservation)
+
+=== Key Differences ===
+1. Scale: SPH produces much larger values (hundreds) vs LRT (typically <15)
+2. Missing data: SPH uses 999999999.000, LRT may use different encoding
+3. Interpretation: Both indicate conservation/acceleration, but different scales
+4. Statistical basis: SPH uses posterior probabilities, LRT uses likelihood ratios
+
+=== For the value 309.331 (SPH) ===
+This is NOT a direct -log10(p-value) conversion.
+If it were -log10(p-value) = 309.331:
+  p-value = 10^(-309.331) ≈ 4.67 × 10^-310
+
+However, SPH scores are posterior probabilities transformed differently.
+The value 309.331 indicates extremely strong conservation, regardless of exact transformation.
+

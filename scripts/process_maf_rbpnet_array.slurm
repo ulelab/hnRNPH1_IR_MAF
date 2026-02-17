@@ -21,21 +21,37 @@ echo "Activated conda environment: $CONDA_DEFAULT_ENV"
 
 # Paths - adjust these for your HPC
 MSA_VIEW_BIN="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/kent/src/msa_view"
-RBPNET_BIN="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/rbpnet/rbpnet"
-RBPNET_MODEL="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/RBPnet/models/PRPF8_HepG2.model.h5"
+# Determine RBPnet binary path (prefer PATH, fallback to explicit path)
+if command -v rbpnet &> /dev/null; then
+    RBPNET_BIN=$(command -v rbpnet)
+    echo "Using rbpnet from PATH: $RBPNET_BIN"
+elif [ -f "${CONDA_BASE}/envs/rbpnet-env/bin/rbpnet" ]; then
+    RBPNET_BIN="${CONDA_BASE}/envs/rbpnet-env/bin/rbpnet"
+    echo "Using rbpnet from conda environment: $RBPNET_BIN"
+else
+    # Fallback to original path (in case it's a symlink or different location)
+    RBPNET_BIN="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/mambaforge/bin/rbpnet"
+    if [ ! -f "$RBPNET_BIN" ]; then
+        echo "ERROR: rbpnet binary not found at any expected location"
+        exit 1
+    fi
+    echo "Using rbpnet from explicit path: $RBPNET_BIN"
+fi
+RBPNET_MODEL="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/rbpnet/models/PRPF8_HepG2.model.h5"
 DECOY_BED="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/consGenesDecoys/DecoysInConservedGenes50thpercentilev3.bed"
 MAF_OUTPUT_DIR="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/consGenesDecoys/maf_outputv2"
 OUTPUT_DIR="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/rbpnet/maf"
 SPECIES_MAP="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/tree_to_clade_mapping.tsv"
 CHRPARTS_FILE="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/consGenesDecoys/chrparts.txt"
-PYTHON_SCRIPT="/scratch/prj/ppn_rnp_networks/users/mike.jones/software/process_maf_rbpnet_v2.py"
+PYTHON_SCRIPT="/scratch/prj/ppn_rnp_networks/users/mike.jones/data/maf/process_maf_rbpnet_v2.py"
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
 # Get the subdirectory name for this array task
 BED_PART=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$CHRPARTS_FILE")
-SUBDIR_NAME="${BED_PART%.bed}"
+# Trim whitespace and remove .bed extension (more portable than xargs)
+SUBDIR_NAME=$(echo "$BED_PART" | sed 's/\.bed$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 if [ -z "$SUBDIR_NAME" ]; then
     echo "ERROR: No subdirectory found for task ${SLURM_ARRAY_TASK_ID}"
@@ -51,7 +67,7 @@ if [ ! -d "$MAF_SUBDIR" ]; then
 fi
 
 # Count MAF files
-NUM_MAF_FILES=$(find "$MAF_SUBDIR" -name "*.maf" | wc -l)
+NUM_MAF_FILES=$(find "$MAF_SUBDIR" -name "*.maf" 2>/dev/null | wc -l)
 
 echo "=========================================="
 echo "Task ${SLURM_ARRAY_TASK_ID}: Processing ${SUBDIR_NAME}"
@@ -62,8 +78,20 @@ echo "Start time: $(date)"
 echo "=========================================="
 echo ""
 
+# Check if Python script exists
+if [ ! -f "$PYTHON_SCRIPT" ]; then
+    echo "ERROR: Python script not found: $PYTHON_SCRIPT"
+    exit 1
+fi
+
+# Warn if no MAF files found (script will still run and create header-only output)
+if [ "$NUM_MAF_FILES" -eq 0 ]; then
+    echo "WARNING: No MAF files found in $MAF_SUBDIR"
+    echo "Script will still run and create output file with header only"
+fi
+
 # Run Python script to process all MAF files in this subdirectory
-# Use python from conda environment
+# Use python from conda environment (should be in PATH after conda activate)
 python "$PYTHON_SCRIPT" \
     --maf_dir "$MAF_SUBDIR" \
     --decoy_bed "$DECOY_BED" \

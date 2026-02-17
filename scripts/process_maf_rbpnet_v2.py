@@ -64,13 +64,40 @@ def extract_fasta_from_maf(maf_file, msa_view_bin, strand, temp_dir, debug=False
     # Run msa_view and write to fasta file
     try:
         with open(fasta_file, 'w') as f:
-            result = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, check=True)
+            result = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, check=True, text=True)
+        
+        # Verify the file was created and has content
+        if not os.path.exists(fasta_file):
+            if debug:
+                print(f"WARNING: FASTA file was not created: {fasta_file}", file=sys.stderr)
+            return None
+        
+        file_size = os.path.getsize(fasta_file)
+        if file_size == 0:
+            if debug:
+                stderr_msg = result.stderr if hasattr(result, 'stderr') else "No stderr available"
+                print(f"WARNING: Empty FASTA file created for {os.path.basename(maf_file)} (size: {file_size} bytes). stderr: {stderr_msg}", file=sys.stderr)
+            return None
+        
+        if debug:
+            print(f"  Successfully extracted FASTA: {fasta_file} (size: {file_size} bytes)", file=sys.stderr)
+        
         return fasta_file
     except subprocess.CalledProcessError as e:
-        # Invalid/empty MAF files are expected for some regions - only print in debug mode
+        # Invalid/empty MAF files are expected for some regions
+        # Note: stderr is already a string when text=True, so no need to decode
+        error_msg = e.stderr.strip() if e.stderr else "No error message"
+        
+        # Check MAF file size to diagnose potential issues
+        maf_size = os.path.getsize(maf_file) if os.path.exists(maf_file) else 0
+        
+        # Always log failures (not just in debug mode) to help diagnose the 30% failure rate
+        print(f"WARNING: msa_view failed for {os.path.basename(maf_file)} (MAF size: {maf_size} bytes, strand: {strand}): {error_msg}", file=sys.stderr)
+        
+        return None
+    except Exception as e:
         if debug:
-            error_msg = e.stderr.decode().strip()
-            print(f"WARNING: msa_view failed for {os.path.basename(maf_file)}: {error_msg}", file=sys.stderr)
+            print(f"WARNING: Unexpected error extracting FASTA from {os.path.basename(maf_file)}: {e}", file=sys.stderr)
         return None
 
 def parse_fasta_headers(fasta_file):
@@ -127,36 +154,7 @@ def parse_rbpnet_tsv(rbpnet_tsv_file, debug=False):
 def find_top3_canonical_scores(profile_data, debug=False):
     """
     Find top 3 scores in first 100 nucleotides (5' splice site)
-    Returns: list of (score, position) tuples, sorted by score descending
-    """
-    if profile_data is None or len(profile_data) == 0:
-        return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
-    
-    # Filter to first 100 positions
-    first_100 = [(pos, score) for pos, score in profile_data if pos < 100]
-    
-    if len(first_100) == 0:
-        return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
-    
-    # Sort by score descending and take top 3
-    first_100_sorted = sorted(first_100, key=lambda x: x[1], reverse=True)
-    top3 = first_100_sorted[:3]
-    
-    # Pad to 3 if needed
-    while len(top3) < 3:
-        top3.append((-1.0, -1))
-    
-    # Return as (score, position) tuples
-    result = [(score, pos) for pos, score in top3]
-    
-    if debug:
-        print(f"    Top 3 canonical scores (5' splice site, first 100nt): {result}", file=sys.stderr)
-    
-    return result
-
-def find_top3_canonical_scores_3p(profile_data, debug=False):
-    """
-    Find top 3 scores in last 100 nucleotides (3' splice site)
+    For sequences < 100 nt, use first 50 positions instead
     Returns: list of (score, position) tuples, sorted by score descending
     """
     if profile_data is None or len(profile_data) == 0:
@@ -165,20 +163,23 @@ def find_top3_canonical_scores_3p(profile_data, debug=False):
     # Get sequence length
     seq_length = len(profile_data)
     
-    if seq_length <= 100:
-        # If sequence is <= 100 nt, return -1 for all
-        return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
+    # Use first 50 positions if sequence < 100 nt, otherwise first 100
+    if seq_length < 100:
+        search_window = 50
+        region_desc = "first 50nt"
+    else:
+        search_window = 100
+        region_desc = "first 100nt"
     
-    # Filter to last 100 positions
-    last_100_start = seq_length - 100
-    last_100 = [(pos, score) for pos, score in profile_data if pos >= last_100_start]
+    # Filter to first N positions
+    first_region = [(pos, score) for pos, score in profile_data if pos < search_window]
     
-    if len(last_100) == 0:
+    if len(first_region) == 0:
         return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
     
     # Sort by score descending and take top 3
-    last_100_sorted = sorted(last_100, key=lambda x: x[1], reverse=True)
-    top3 = last_100_sorted[:3]
+    first_region_sorted = sorted(first_region, key=lambda x: x[1], reverse=True)
+    top3 = first_region_sorted[:3]
     
     # Pad to 3 if needed
     while len(top3) < 3:
@@ -188,13 +189,58 @@ def find_top3_canonical_scores_3p(profile_data, debug=False):
     result = [(score, pos) for pos, score in top3]
     
     if debug:
-        print(f"    Top 3 canonical scores (3' splice site, last 100nt): {result}", file=sys.stderr)
+        print(f"    Top 3 canonical scores (5' splice site, {region_desc}): {result}", file=sys.stderr)
+    
+    return result
+
+def find_top3_canonical_scores_3p(profile_data, debug=False):
+    """
+    Find top 3 scores in last 100 nucleotides (3' splice site)
+    For sequences < 100 nt, use last 50 positions instead
+    Returns: list of (score, position) tuples, sorted by score descending
+    """
+    if profile_data is None or len(profile_data) == 0:
+        return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
+    
+    # Get sequence length
+    seq_length = len(profile_data)
+    
+    # Use last 50 positions if sequence < 100 nt, otherwise last 100
+    if seq_length < 100:
+        search_window = 50
+        region_desc = "last 50nt"
+        last_region_start = max(0, seq_length - search_window)
+    else:
+        search_window = 100
+        region_desc = "last 100nt"
+        last_region_start = seq_length - search_window
+    
+    # Filter to last N positions
+    last_region = [(pos, score) for pos, score in profile_data if pos >= last_region_start]
+    
+    if len(last_region) == 0:
+        return [(-1.0, -1), (-1.0, -1), (-1.0, -1)]
+    
+    # Sort by score descending and take top 3
+    last_region_sorted = sorted(last_region, key=lambda x: x[1], reverse=True)
+    top3 = last_region_sorted[:3]
+    
+    # Pad to 3 if needed
+    while len(top3) < 3:
+        top3.append((-1.0, -1))
+    
+    # Return as (score, position) tuples
+    result = [(score, pos) for pos, score in top3]
+    
+    if debug:
+        print(f"    Top 3 canonical scores (3' splice site, {region_desc}): {result}", file=sys.stderr)
     
     return result
 
 def find_intronic_scores(profile_data, threshold=0.02, debug=False):
     """
     Find all scores > threshold between position 100 and (length - 100)
+    For sequences < 100 nt, return empty list (intronic scores will be -1)
     Returns: list of (score, position) tuples, sorted by position ascending
     """
     if profile_data is None or len(profile_data) == 0:
@@ -202,6 +248,12 @@ def find_intronic_scores(profile_data, threshold=0.02, debug=False):
     
     # Get sequence length
     seq_length = len(profile_data)
+    
+    # If sequence is < 100 nt, no intronic region (will be recorded as -1)
+    if seq_length < 100:
+        if debug:
+            print(f"    Sequence too short ({seq_length} nt) for intronic region (need >= 100 nt)", file=sys.stderr)
+        return []
     
     # Calculate end position for intronic region (exclude last 100 nt)
     intronic_end = seq_length - 100
@@ -287,6 +339,10 @@ def run_rbpnet_on_fasta(fasta_file, rbpnet_bin, rbpnet_model, temp_dir, debug=Fa
                     
                     # Only process if we have a valid species ID
                     if species_id:
+                        seq_len = len(sequence)
+                        # Warn about very short sequences that might cause issues
+                        if seq_len < 50:
+                            print(f"WARNING: Very short sequence for {species_id} ({seq_len} nt) - may cause RBPnet issues", file=sys.stderr)
                         species_scores[species_id] = process_sequence_with_rbpnet(
                             sequence, species_id, rbpnet_bin, rbpnet_model, 
                             temp_dir, fasta_file, debug=debug)
@@ -311,6 +367,10 @@ def run_rbpnet_on_fasta(fasta_file, rbpnet_bin, rbpnet_model, temp_dir, debug=Fa
                 species_id = current_header
             # Only process if we have a valid species ID
             if species_id:
+                seq_len = len(sequence)
+                # Warn about very short sequences that might cause issues
+                if seq_len < 50:
+                    print(f"WARNING: Very short sequence for {species_id} ({seq_len} nt) - may cause RBPnet issues", file=sys.stderr)
                 species_scores[species_id] = process_sequence_with_rbpnet(
                     sequence, species_id, rbpnet_bin, rbpnet_model, 
                     temp_dir, fasta_file, debug=debug)
@@ -423,10 +483,13 @@ def process_maf_file(maf_file, msa_view_bin, strand_map, rbpnet_bin, rbpnet_mode
         return {species: "[-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1]" for species in all_species}
     
     # Check if FASTA file has content
-    if os.path.getsize(fasta_file) == 0:
-        if debug:
-            print(f"  WARNING: Empty FASTA file for {decoy_id}", file=sys.stderr)
+    fasta_size = os.path.getsize(fasta_file)
+    if fasta_size == 0:
+        print(f"ERROR: Empty FASTA file for {decoy_id} (size: {fasta_size} bytes)", file=sys.stderr)
         return {species: "[-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1][-1.0][-1]" for species in all_species}
+    
+    if debug:
+        print(f"  FASTA file size: {fasta_size} bytes", file=sys.stderr)
     
     # Run RBPnet
     species_scores = run_rbpnet_on_fasta(fasta_file, rbpnet_bin, rbpnet_model, temp_dir, debug=debug)

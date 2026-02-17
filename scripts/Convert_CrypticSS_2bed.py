@@ -1,10 +1,12 @@
 import re
 import pandas as pd
+import os
 
 # Input settings
-input_path = "/scratch/prj/ppn_rnp_networks/users/mike.jones/data/splice/CrypticSS_All_Inferences.tsv"
-output_path = "/scratch/prj/ppn_rnp_networks/users/mike.jones/data/splice/CrypticSS_All.filtered.bedgraph"
-logfile = "/scratch/prj/ppn_rnp_networks/users/mike.jones/software/header_parse_failures.log"
+base_path = "/home/mikej10/advbfx/intronretention/hnRNPH1_IR_MAF"
+input_path = os.path.join(base_path, "data", "HNRNPH1", "HNRNPH1v3_triplets.tsv")
+output_path = os.path.join(base_path, "data", "HNRNPH1", "HNRNPH1v3_triplets.bedgraph")
+logfile = os.path.join(base_path, "scripts", "header_parse_failures.log")
 
 # Format: choose "matrix" (CrypticSS) or "fasta" (RBPNet)
 input_format = "matrix"  # <-- change accordingly
@@ -56,6 +58,11 @@ with open(input_path, "r") as infile:
         elif input_format == "matrix":
             fields = line.strip().split("\t")
             intron_id = fields[0]
+            
+            # Strip leading '>' if present (for triplets format)
+            if intron_id.startswith(">"):
+                intron_id = intron_id[1:]
+            
             prediction_blocks = fields[1:]
 
             try:

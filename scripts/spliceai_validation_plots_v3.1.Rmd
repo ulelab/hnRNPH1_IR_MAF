@@ -515,7 +515,7 @@ pheatmap(
   color = custom_palette,
   breaks = breaks,
   cluster_rows = FALSE,  # Keep species in Newick order
-  cluster_cols = TRUE,
+  cluster_cols = FALSE,  # Use pre-determined column order to preserve annotation
   show_rownames = TRUE,
   show_colnames = FALSE,  # Too many decoy IDs to show
   annotation_col = annotation_col,
@@ -523,6 +523,7 @@ pheatmap(
   annotation_legend = TRUE,
   main = "Heatmap of max2 (Secondary SpliceAI Scores) - Species Ordered by Newick Tree",
   fontsize_row = 8,
+  fontsize_col = 6,
   border_color = NA,
   na_col = "grey70",
   legend_breaks = c(-1, 0, 0.1, 0.3, 0.7, 1.0),
