@@ -22,13 +22,13 @@ library(grid)
 
 ```{r load-data}
 # Read the protein coding dataset
-protein_coding_data <- fread("SpliceAI_MAF_protein_coding.tsv", sep = "\t", header = TRUE)
+protein_coding_data <- fread("../results/splice_out_v1/SpliceAI_MAF_protein_coding.tsv", sep = "\t", header = TRUE)
 cat("Protein coding dataset loaded:\n")
 cat("  Number of decoy IDs:", nrow(protein_coding_data), "\n")
 cat("  Number of species:", ncol(protein_coding_data) - 1, "\n")
 
 # Read the filtered control dataset
-control_data <- fread("control_spliceai_filtered_protein_coding.tsv", sep = "\t", header = TRUE)
+control_data <- fread("../results/splice_out_v1/ctrl_output/control_spliceai_filtered_protein_coding.tsv", sep = "\t", header = TRUE)
 cat("\nControl dataset loaded:\n")
 cat("  Number of decoy IDs:", nrow(control_data), "\n")
 cat("  Number of species:", ncol(control_data) - 1, "\n")
@@ -73,8 +73,8 @@ data_matrix_kmeans <- as.matrix(combined_data[, -1, with = FALSE])
 rownames(data_matrix_kmeans) <- decoy_ids_kmeans
 
 # Read species order and mapping
-species_order <- fread("Newickspeciesorder.txt", header = FALSE, col.names = "tree_name")
-species_mapping <- fread("tree_to_clade_mapping.tsv", sep = "\t", header = TRUE)
+species_order <- fread("../data//Newickspeciesorder.txt", header = FALSE, col.names = "tree_name")
+species_mapping <- fread("../results/tree_to_clade_mapping.tsv", sep = "\t", header = TRUE)
 ordered_species <- merge(species_order, species_mapping, by = "tree_name", all.x = TRUE, sort = FALSE)
 ordered_species_ids <- ordered_species$species_id[!is.na(ordered_species$species_id)]
 

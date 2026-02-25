@@ -23,7 +23,7 @@ library(dplyr)
 
 ```{r load-data}
 # Read the TSV file (filtered for min 0.01 SpliceAI score in human)
-spliceai_data <- fread("SpliceAI_MAF_protein_coding_min0.01.tsv", sep = "\t", header = TRUE)
+spliceai_data <- fread("../results/splice_out_v1/SpliceAI_MAF_protein_coding_min0.01.tsv", sep = "\t", header = TRUE)
 cat("Decoy dataset loaded (min 0.01 SpliceAI score in human):\n")
 cat("  Number of decoy IDs:", nrow(spliceai_data), "\n")
 cat("  Number of species:", ncol(spliceai_data) - 1, "\n")
@@ -42,8 +42,8 @@ data_matrix_kmeans <- as.matrix(spliceai_data[, -1, with = FALSE])
 rownames(data_matrix_kmeans) <- decoy_ids_kmeans
 
 # Read species order and mapping
-species_order <- fread("Newickspeciesorder.txt", header = FALSE, col.names = "tree_name")
-species_mapping <- fread("tree_to_clade_mapping.tsv", sep = "\t", header = TRUE)
+species_order <- fread("../data/Newickspeciesorder.txt", header = FALSE, col.names = "tree_name")
+species_mapping <- fread("../results/tree_to_clade_mapping.tsv", sep = "\t", header = TRUE)
 ordered_species <- merge(species_order, species_mapping, by = "tree_name", all.x = TRUE, sort = FALSE)
 ordered_species_ids <- ordered_species$species_id[!is.na(ordered_species$species_id)]
 
@@ -169,7 +169,7 @@ beep()
 
 ```{r load-control-data}
 # Read the filtered control TSV file with suffixes
-control_data <- fread("control_spliceai_filtered_protein_coding.tsv", sep = "\t", header = TRUE)
+control_data <- fread("../results/splice_out_v1/ctrl_output/control_spliceai_filtered_protein_coding.tsv", sep = "\t", header = TRUE)
 cat("Control data loaded:\n")
 cat("  Number of decoy IDs:", nrow(control_data), "\n")
 cat("  Number of species:", ncol(control_data) - 1, "\n")
@@ -309,7 +309,7 @@ control_col_annotation_P <- control_P_result$annotation
 ```{r load-phylop-data}
 # Load phyloP data for annotation
 # Load filtered phyloP summary data (decoy) - protein coding filtered
-phylop_data <- read.table("phyloP/decoy/phyloP_decoy_protein_coding.tsv", 
+phylop_data <- read.table("../results/phyloP/decoy/phyloP_decoy_protein_coding.tsv", 
                           sep = "\t", 
                           header = TRUE,
                           stringsAsFactors = FALSE)
@@ -319,7 +319,7 @@ cat("  Total rows:", nrow(phylop_data), "\n")
 cat("  Columns:", paste(colnames(phylop_data), collapse = ", "), "\n")
 
 # Load filtered phyloP control data
-phylop_control_data <- fread("phyloP/ctrl/phyloP_ctrl_summary_filtered_protein_coding.tsv", 
+phylop_control_data <- fread("../results/phyloP/ctrl/phyloP_ctrl_summary_filtered_protein_coding.tsv", 
                              sep = "\t", 
                              header = TRUE)
 
@@ -556,7 +556,8 @@ combined_annotation <- data.frame(
 # Sorted by origin (D, C, P) then by max SpliceAI score within each origin segment
 # Includes annotations: Origin (Decoy/Canonical/NonPRPF8) and phyloP metrics
 
-png("Combined_Clusters2_4_Heatmap_Origin_phyloP_lnAnnotation0126.png", width = 2400, height = 2000, res = 150)
+```{r}
+
 pheatmap(
   combined_matrix_sorted,
   color = color_gradient,
@@ -578,8 +579,9 @@ pheatmap(
     Sum_positive_phyloP = viridis(100)
   )
 )
-dev.off()
+
 beep()
+```
 
 cat("\nHeatmap saved: Combined_Clusters2_4_Heatmap_Origin_phyloP_Annotation.png\n")
 cat("  Shows genes from Canonical clusters 2 & 4 across all three datasets (D, C, P)\n")
