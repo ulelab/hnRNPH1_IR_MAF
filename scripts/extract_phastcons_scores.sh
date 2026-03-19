@@ -6,7 +6,6 @@ set -e
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Go up from scripts/ to hnRNPH1_IR_MAF/
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 BIGWIG_FILE="${1:-hg38.phastCons470way.bw}"
 BED_FILE="${2:-$PROJECT_DIR/data/DecoysControlsUniqueIDsforRecount_filtered_intron.bed}"

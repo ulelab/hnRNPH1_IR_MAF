@@ -1,66 +1,93 @@
+import argparse
 import os
-import sys
+import subprocess
+import tempfile
+
 import numpy as np
 from keras.models import load_model
 from pkg_resources import resource_filename
 from spliceai.utils import one_hot_encode
 
-# Silence TensorFlow output and progress bars
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import tensorflow as tf
-tf.get_logger().setLevel('ERROR')
 
-# Paths
-input_tsv = '/scratch/prj/ppn_rnp_networks/users/mike.jones/data/splice/batches.tsv'
-input_dir = '/scratch/prj/ppn_rnp_networks/users/mike.jones/data/splice/split_batches'
-output_dir = '/scratch/prj/ppn_rnp_networks/users/mike.jones/software/spliceAI/inf'
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bed", required=True)
+    parser.add_argument("--fasta", required=True)
+    parser.add_argument("--genome", required=True)
+    parser.add_argument("--out", required=True)
+    return parser.parse_args()
 
-# Load models
-context = 10000
-paths = ('models/spliceai{}.h5'.format(x) for x in range(1, 6))
-models = [load_model(resource_filename('spliceai', x), compile=False) for x in paths]
-predict_fn = [model.predict for model in models]
 
-# Get SLURM array index
-array_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 1))
-with open(input_tsv) as f:
-    fasta_file = f.readlines()[array_id - 1].strip()
+def load_spliceai_models():
+    paths = (f"models/spliceai{x}.h5" for x in range(1, 6))
+    return [load_model(resource_filename("spliceai", p), compile=False) for p in paths]
 
-fasta_path = os.path.join(input_dir, fasta_file)
 
-# Read FASTA and run predictions
-output_lines = []
+def read_fasta_sequences(fasta_path):
+    seqs = []
+    with open(fasta_path) as f:
+        lines = [line.strip() for line in f if line.strip()]
+    for i in range(0, len(lines), 2):
+        seqs.append(lines[i + 1].upper())
+    return seqs
 
-with open(fasta_path) as f:
-    lines = f.readlines()
 
-for i in range(0, len(lines), 2):
-    header = lines[i].strip()[1:]  # Remove '>'
-    sequence = lines[i+1].strip().upper()
+def max_spliceai_score(sequence, models, context=10000):
+    padded = "N" * (context // 2) + sequence + "N" * (context // 2)
+    x = one_hot_encode(padded)[None, :]
+    y = np.mean([m.predict(x, verbose=0) for m in models], axis=0)[0]
 
-    padded_seq = 'N' * (context // 2) + sequence + 'N' * (context // 2)
-    x = one_hot_encode(padded_seq)[None, :]
-
-    y = np.mean([fn(x, verbose=0) for fn in predict_fn], axis=0)
-    scores = y[0]  # shape (len + context, 4)
-
-    # Context trimming logic
     if len(sequence) >= context:
         start = context // 2
         end = start + len(sequence)
-        acceptor_probs = scores[start:end, 1]
-        donor_probs = scores[start:end, 2]
+        region = y[start:end, :]
     else:
-        acceptor_probs = scores[:len(sequence), 1]
-        donor_probs = scores[:len(sequence), 2]
+        region = y[: len(sequence), :]
 
-    values = [f"{acc:.6f},{don:.6f},{pos}" for pos, (acc, don) in enumerate(zip(acceptor_probs, donor_probs), start=1)]
-    output_lines.append(f"{header}\t" + "\t".join(values))
+    acceptor_max = float(np.max(region[:, 1]))
+    donor_max = float(np.max(region[:, 2]))
+    return max(acceptor_max, donor_max)
 
-# Write to file
-basename = os.path.splitext(fasta_file)[0]
-outfile = os.path.join(output_dir, f"{basename}_triplets.tsv")
-with open(outfile, 'w') as f:
-    f.write("ID\t[Acceptor,Donor,Position]...\n")
-    f.write("\n".join(output_lines))
+
+def main():
+    args = parse_args()
+    models = load_spliceai_models()
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        slopped_bed = os.path.join(tmpdir, "slop24.bed")
+        seq_fa = os.path.join(tmpdir, "slop24.fa")
+
+        subprocess.run(
+            ["bedtools", "slop", "-i", args.bed, "-g", args.genome, "-b", "24"],
+            stdout=open(slopped_bed, "w"),
+        )
+
+        subprocess.run(
+            [
+                "bedtools",
+                "getfasta",
+                "-fi",
+                args.fasta,
+                "-bed",
+                slopped_bed,
+                "-s",
+                "-name",
+            ],
+            stdout=open(seq_fa, "w"),
+        )
+
+        seqs = read_fasta_sequences(seq_fa)
+        scores = [max_spliceai_score(seq, models) for seq in seqs]
+
+    with open(args.bed) as fin, open(args.out, "w") as fout:
+        for line, score in zip(fin, scores):
+            cols = line.rstrip("\n").split("\t")
+            while len(cols) < 5:
+                cols.append(".")
+            cols[4] = f"{score:.6f}"
+            fout.write("\t".join(cols) + "\n")
+
+
+if __name__ == "__main__":
+    main()
 
