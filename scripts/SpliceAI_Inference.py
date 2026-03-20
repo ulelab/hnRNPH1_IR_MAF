@@ -4,9 +4,9 @@ import subprocess
 import tempfile
 
 import numpy as np
-from keras.models import load_model
+from keras.models import load_model  # type: ignore
 from pkg_resources import resource_filename
-from spliceai.utils import one_hot_encode
+from spliceai.utils import one_hot_encode  # type: ignore
 
 
 def parse_args():
@@ -24,29 +24,52 @@ def load_spliceai_models():
 
 
 def read_fasta_sequences(fasta_path):
+    # Parse FASTA robustly (bedtools FASTA may or may not be single-line)
     seqs = []
+    current = []
+    in_seq = False
     with open(fasta_path) as f:
-        lines = [line.strip() for line in f if line.strip()]
-    for i in range(0, len(lines), 2):
-        seqs.append(lines[i + 1].upper())
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                if in_seq:
+                    seqs.append("".join(current).upper())
+                current = []
+                in_seq = True
+                continue
+            current.append(line)
+        if current:
+            seqs.append("".join(current).upper())
+        elif in_seq:
+            # Handle the case where a FASTA header exists but the sequence body is empty.
+            seqs.append("")
     return seqs
 
 
 def max_spliceai_score(sequence, models, context=10000):
-    padded = "N" * (context // 2) + sequence + "N" * (context // 2)
+    sequence_clean = sequence.replace("-", "").replace(" ", "").replace("*", "").upper()
+    if len(sequence_clean) == 0:
+        return -1.0
+    sequence_no_n = sequence_clean.replace("N", "").replace("n", "")
+    if len(sequence_no_n) == 0:
+        return -1.0
+
+    padded = "N" * (context // 2) + sequence_clean + "N" * (context // 2)
     x = one_hot_encode(padded)[None, :]
     y = np.mean([m.predict(x, verbose=0) for m in models], axis=0)[0]
 
-    if len(sequence) >= context:
+    if len(sequence_clean) >= context:
         start = context // 2
-        end = start + len(sequence)
+        end = start + len(sequence_clean)
         region = y[start:end, :]
     else:
-        region = y[: len(sequence), :]
+        region = y[: len(sequence_clean), :]
 
-    acceptor_max = float(np.max(region[:, 1]))
+    # Donor-only, ignore acceptor scores
     donor_max = float(np.max(region[:, 2]))
-    return max(acceptor_max, donor_max)
+    return donor_max
 
 
 def main():
