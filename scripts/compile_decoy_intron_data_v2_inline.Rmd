@@ -1,0 +1,256 @@
+---
+title: "Compile Decoy Intron Data From Slop24 (v2 Inline)"
+output: html_document
+---
+
+This workflow expects a precomputed slop24 BED with phastCons columns:
+`../data/Decoys/Decoys_proteincoding_slop24_with_phastcons.bed`.
+
+The phastCons values were computed outside this Rmd using
+`scripts/extract_phastcons_scores.sh` on a temporary BED where column 4 was made unique
+as `GENE_start` (required by `bigWigAverageOverBed`), then merged back onto the original slop24 BED:
+
+- phastCons 470-way from `reference/hg38.phastCons470way.bw` -> appended as column 9
+- phastCons 100-way from `reference/hg38.phastCons100way.bw` -> appended as column 8
+
+Final BED column layout used here:
+1=`chr`, 2=`start`, 3=`end`, 4=`gene`, 5=`SpliceAI_score`, 6=`strand`,
+7=`counts` (dropped on load), 8=`phastCons100_mean`, 9=`phastCons470_mean`.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r load-libraries}
+library(data.table)
+library(GenomicRanges)
+library(ggplot2)
+library(VarCon)
+```
+
+## Inputs and Paths
+
+```{r paths}
+slop24_bed <- "../data/Decoys/Decoys_proteincoding_slop24_with_phastcons.bed"
+psi_table <- "../reference/PSI_TABLE-hg38.tab.gz"
+genome_fa <- "../../../reference/genomes/Gencode49/GRCh38.primary_assembly.genome.fa"
+
+out_dir <- "../results"
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+genome_fa <- normalizePath(genome_fa, mustWork = TRUE)
+```
+
+## Step 0: Load slop24 BED
+
+```{r load-slop24}
+bed <- fread(
+  slop24_bed,
+  sep = "\t",
+  header = FALSE,
+  col.names = c(
+    "chr", "start", "end", "decoyID", "SpliceAI_score", "strand",
+    "counts", "phastCons100_mean", "phastCons470_mean"
+  )
+)
+bed[, counts := NULL]
+bed[, decoyID := paste0(decoyID, "_", start)]
+
+cat("Loaded slop24 BED rows:", nrow(bed), "\n")
+cat("Unique decoy IDs:", uniqueN(bed$decoyID), "\n")
+cat("Duplicate decoyID rows:", sum(duplicated(bed$decoyID)), "\n")
+```
+
+## Step 1: Overlap slop24 with PSI table (HsaIN only, no -Q columns)
+
+```{r load-psi}
+psi <- fread(psi_table, sep = "\t", header = TRUE)
+psi <- psi[grepl("^HsaIN", EVENT)]
+q_cols <- grep("-Q$", names(psi), value = TRUE)
+if (length(q_cols) > 0) psi[, (q_cols) := NULL]
+
+coord_parts <- tstrsplit(psi$COORD, ":", fixed = TRUE)
+range_parts <- tstrsplit(coord_parts[[2]], "-", fixed = TRUE)
+psi[, chr := coord_parts[[1]]]
+psi[, intron_start := as.integer(range_parts[[1]])]
+psi[, intron_end := as.integer(range_parts[[2]])]
+psi <- psi[!is.na(chr) & !is.na(intron_start) & !is.na(intron_end)]
+cat("PSI rows retained:", nrow(psi), "\n")
+```
+
+```{r overlap}
+decoy_gr <- GRanges(seqnames = bed$chr, ranges = IRanges(start = bed$start + 1, end = bed$end), strand = bed$strand)
+psi_gr <- GRanges(seqnames = psi$chr, ranges = IRanges(start = psi$intron_start, end = psi$intron_end))
+hits <- findOverlaps(decoy_gr, psi_gr, ignore.strand = TRUE)
+cat("Overlap pairs:", length(hits), "\n")
+
+bed_hit <- bed[queryHits(hits)]
+psi_hit <- psi[subjectHits(hits)]
+overlap_cols <- intersect(names(bed_hit), names(psi_hit))
+if (length(overlap_cols) > 0) setnames(psi_hit, overlap_cols, paste0("psi_", overlap_cols))
+merged <- cbind(bed_hit, psi_hit)
+
+merged[, intron_length := intron_end - intron_start + 1L]
+setorder(merged, decoyID, intron_length)
+merged <- merged[!duplicated(decoyID)]
+cat("Rows after shortest-intron selection:", nrow(merged), "\n")
+```
+
+## Step 2: Strand-aware distance from canonical 5'SS
+
+```{r distance}
+merged[, decoy_coord_1based := start + 1L]
+merged[, decoy_distance_from_canonical_5ss := ifelse(
+  strand == "+", decoy_coord_1based - intron_start, intron_end - decoy_coord_1based
+)]
+```
+
+## Step 3: Inline MaxEntScan (decoy + canonical)
+
+```{r maxent-inline}
+read_fasta_sequences <- function(fasta_file) {
+  lines <- readLines(fasta_file, warn = FALSE)
+  headers <- which(startsWith(lines, ">"))
+  if (length(headers) == 0) return(character(0))
+  seqs <- character(length(headers))
+  for (i in seq_along(headers)) {
+    start <- headers[i] + 1
+    end <- if (i < length(headers)) headers[i + 1] - 1 else length(lines)
+    if (start <= end) {
+      seqs[i] <- paste0(lines[start:end], collapse = "")
+    } else {
+      seqs[i] <- ""
+    }
+  }
+  toupper(seqs)
+}
+
+run_maxent_5ss <- function(input_bed, output_bed, genome_fa, bedtools_bin, mode = c("decoy", "canonical")) {
+  mode <- match.arg(mode)
+  x <- fread(input_bed, sep = "\t", header = FALSE)
+  stopifnot(ncol(x) >= 6)
+  setnames(x, 1:6, c("chr", "start", "end", "name", "score", "strand"))
+
+  y <- copy(x)
+  if (mode == "decoy") {
+    y[strand == "+", `:=`(start = pmax(0L, start - 2L), end = end + 6L)]
+    y[strand == "-", `:=`(start = pmax(0L, start - 6L), end = end + 2L)]
+  } else {
+    y[strand == "+", `:=`(start = pmax(0L, start - 4L), end = start + 9L)]
+    y[strand == "-", `:=`(start = pmax(0L, end - 6L), end = end + 3L)]
+  }
+
+  tmp_bed <- tempfile(fileext = ".bed")
+  tmp_fa <- tempfile(fileext = ".fa")
+  on.exit(unlink(c(tmp_bed, tmp_fa), force = TRUE), add = TRUE)
+
+  fwrite(y[, c("chr", "start", "end", "name", "score", "strand"), with = FALSE], tmp_bed, sep = "\t", col.names = FALSE)
+  system2(bedtools_bin, c("getfasta", "-fi", genome_fa, "-bed", tmp_bed, "-s", "-name", "-fo", tmp_fa), stdout = TRUE, stderr = TRUE)
+
+  seqs <- read_fasta_sequences(tmp_fa)
+  seqs <- gsub("N", "A", seqs, fixed = TRUE) # keep sequences valid for MaxEntScan scoring
+  scores <- as.numeric(VarCon::calculateMaxEntScanScore(seqs, ssType = 5))
+  x[, "maxent_score" := scores]
+  fwrite(x, output_bed, sep = "\t", col.names = FALSE)
+}
+
+tmp_decoy_bed <- file.path(out_dir, "decoy_introns_for_maxent_decoy_coords.bed")
+tmp_canonical_bed <- file.path(out_dir, "decoy_introns_for_maxent_canonical_coords.bed")
+maxent_decoy_out <- file.path(out_dir, "decoy_introns_for_maxent_maxent_decoy.bed")
+maxent_canonical_out <- file.path(out_dir, "decoy_introns_for_maxent_maxent_canonical.bed")
+
+fwrite(merged[, .(chr, start, end, decoyID, SpliceAI_score, strand)], tmp_decoy_bed, sep = "\t", col.names = FALSE)
+canonical_bed <- merged[, .(
+  chr = chr,
+  start = ifelse(strand == "+", intron_start - 1L, intron_end - 1L),
+  end = ifelse(strand == "+", intron_start, intron_end),
+  decoyID = decoyID,
+  SpliceAI_score = SpliceAI_score,
+  strand = strand
+)]
+fwrite(canonical_bed, tmp_canonical_bed, sep = "\t", col.names = FALSE)
+
+run_maxent_5ss(tmp_decoy_bed, maxent_decoy_out, genome_fa, bedtools_bin, mode = "decoy")
+run_maxent_5ss(tmp_canonical_bed, maxent_canonical_out, genome_fa, bedtools_bin, mode = "canonical")
+```
+
+## Step 4: Final feature table assembly
+
+```{r merge-features}
+decoy_scores_raw <- fread(maxent_decoy_out, sep = "\t", header = FALSE)
+canonical_scores_raw <- fread(maxent_canonical_out, sep = "\t", header = FALSE)
+
+decoy_scores <- data.table(decoyID = decoy_scores_raw[[4]], MaxEnt_decoy = as.numeric(decoy_scores_raw[[ncol(decoy_scores_raw)]]))
+canonical_scores <- data.table(decoyID = canonical_scores_raw[[4]], MaxEnt_canonical = as.numeric(canonical_scores_raw[[ncol(canonical_scores_raw)]]))
+
+merged <- merge(merged, decoy_scores, by = "decoyID", all.x = TRUE)
+merged <- merge(merged, canonical_scores, by = "decoyID", all.x = TRUE)
+```
+
+## Step 5: PSI>=10 count, column order, and plot
+
+```{r psi-count}
+meta_cols <- c("GENE", "EVENT", "COORD", "LENGTH", "FullCO", "COMPLEX",
+               "chr", "intron_start", "intron_end", "intron_length")
+feature_cols <- c("decoy_coord_1based", "decoy_distance_from_canonical_5ss",
+                  "start", "end", "decoyID", "SpliceAI_score", "strand",
+                  "MaxEnt_decoy", "MaxEnt_canonical", "phastCons470_mean", "phastCons100_mean")
+psi_cols <- setdiff(names(merged), c(meta_cols, feature_cols, "chr.1"))
+psi_num_cols <- psi_cols[sapply(merged[, ..psi_cols], is.numeric)]
+merged[, psi_count_ge10 := rowSums(.SD >= 10, na.rm = TRUE), .SDcols = psi_num_cols]
+```
+
+```{r reorder-columns}
+bed_cols <- c("chr", "start", "end", "decoyID", "SpliceAI_score", "strand")
+feature_cols_preferred <- c(
+  "decoy_coord_1based", "decoy_distance_from_canonical_5ss",
+  "MaxEnt_decoy", "MaxEnt_canonical",
+  "phastCons470_mean", "phastCons100_mean", "psi_count_ge10"
+)
+feature_cols <- feature_cols_preferred[feature_cols_preferred %in% names(merged)]
+remaining_cols <- setdiff(names(merged), c(bed_cols, feature_cols))
+setcolorder(merged, c(bed_cols, feature_cols, remaining_cols))
+```
+
+```{r plot}
+plot_df <- merged[!is.na(decoy_distance_from_canonical_5ss) & !is.na(psi_count_ge10)]
+plot_df[, log_distance_from_5ss := log10(abs(decoy_distance_from_canonical_5ss) + 1)]
+highlight_id <- "HNRNPH1_179620582"
+
+p <- ggplot(
+  plot_df,
+  aes(
+    x = log_distance_from_5ss,
+    y = psi_count_ge10,
+    size = SpliceAI_score,
+    color = phastCons470_mean
+  )
+) +
+  geom_point(alpha = 0.5) +
+  geom_point(data = plot_df[decoyID == highlight_id], color = "red", alpha = 1, stroke = 1.2) +
+  geom_text(
+    data = plot_df[decoyID == highlight_id],
+    aes(label = decoyID),
+    color = "red", vjust = -0.8, size = 3, show.legend = FALSE
+  ) +
+  labs(
+    title = "Log Distance from Canonical 5'SS vs PSI-count >= 10",
+    x = "log10(|decoy distance from canonical 5'SS| + 1)",
+    y = "Number of PSI columns >= 10",
+    size = "SpliceAI score",
+    color = "phastCons 470-way"
+  ) +
+  scale_color_viridis_c(option = "C", na.value = "grey80") +
+  theme_bw()
+
+print(p)
+```
+
+## Write Output
+
+```{r write-output}
+out_tsv <- file.path(out_dir, "decoy_intron_features_draft_v2_inline.tsv")
+fwrite(merged, out_tsv, sep = "\t")
+cat("Output written:", out_tsv, "\n")
+cat("Rows:", nrow(merged), " Columns:", ncol(merged), "\n")
+```

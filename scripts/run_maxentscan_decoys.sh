@@ -1,14 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Config
-INPUT_BED="../data/DecoysControlsUniqueIDsforRecount_filtered.bed"
-GENOME_FA="/home/mikej10/advbfx/reference/genomes/GRCh38.primary_assembly.genome.fa"
-MAXENT_DIR="/home/mikej10/miniconda3/share/maxentscan-0_2004.04.21-4"
-MAXENT_5="${MAXENT_DIR}/maxentscan_score5.pl"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+WORKSPACE_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-# Output
-OUT_BED="${INPUT_BED%.bed}_maxent.bed"
+# Usage:
+#   bash run_maxentscan_decoys.sh <input_bed> [output_bed] [genome_fasta]
+INPUT_BED="${1:?Usage: bash run_maxentscan_decoys.sh <input_bed> [output_bed] [genome_fasta]}"
+OUT_BED="${2:-${INPUT_BED%.bed}_maxent_decoy.bed}"
+GENOME_FA="${3:-$WORKSPACE_DIR/reference/genomes/Gencode49/GRCh38.primary_assembly.genome.fa}"
+
+# Resolve MaxEntScan perl script without hardcoded absolute paths.
+if command -v maxentscan_score5.pl >/dev/null 2>&1; then
+  MAXENT_5="$(command -v maxentscan_score5.pl)"
+elif [ -n "${CONDA_PREFIX:-}" ] && [ -f "${CONDA_PREFIX}/share/maxentscan-0_2004.04.21-4/maxentscan_score5.pl" ]; then
+  MAXENT_5="${CONDA_PREFIX}/share/maxentscan-0_2004.04.21-4/maxentscan_score5.pl"
+elif [ -n "${MAMBA_ROOT_PREFIX:-}" ] && [ -f "${MAMBA_ROOT_PREFIX}/share/maxentscan-0_2004.04.21-4/maxentscan_score5.pl" ]; then
+  MAXENT_5="${MAMBA_ROOT_PREFIX}/share/maxentscan-0_2004.04.21-4/maxentscan_score5.pl"
+else
+  echo "Error: maxentscan_score5.pl not found in PATH or active conda/mamba prefix." >&2
+  exit 1
+fi
+
+if [ ! -f "${INPUT_BED}" ]; then
+  echo "Error: input BED not found: ${INPUT_BED}" >&2
+  exit 1
+fi
+
+if [ ! -f "${GENOME_FA}" ]; then
+  echo "Error: genome FASTA not found: ${GENOME_FA}" >&2
+  exit 1
+fi
 
 # Temp files
 TMP_BED="$(mktemp)"
