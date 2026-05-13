@@ -1,0 +1,19 @@
+rMATS was run using the plain sorted BAM files because the duplicate-marked BAMs showed uneven usable read depth across samples.
+
+Final analysis directory:
+rmats_output_sorted/
+
+Summary:
+No alternative splicing events passed FDR < 0.05 in any event category.
+
+Event types tested:
+- SE: skipped exon
+- A5SS: alternative 5' splice site
+- A3SS: alternative 3' splice site
+- MXE: mutually exclusive exon
+- RI: retained intron
+
+Exploratory filtering using raw PValue < 0.05 and |IncLevelDifference| > 0.1 also returned no events shown through 1 line for the header.
+
+Interpretation:
+Under this rMATS setup, there is no evidence for statistically significant differential alternative splicing between the two sample groups.

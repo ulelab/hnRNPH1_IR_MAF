@@ -3,3 +3,25 @@ data/PRPF8_iCLIP_HepG2_xlinks.bed
 data/Decoys/Splice_All.filtered.01min.bed
 data/Decoys/SupportedSpliceSites_f50.bed
 data/PRPF8/
+# large sequencing/reference files
+data/bam_files/
+bam_files/
+*.bam
+*.bai
+*.gtf
+
+# rMATS temp/intermediate/log files
+rmats_tmp/
+rmats_tmp_sorted/
+rmats_output/tmp/
+rmats_output_sorted/tmp/
+*.rmats
+rmats_log_*.out
+rmats_log_*.err
+rmats_sorted_log_*.out
+rmats_sorted_log_*.err
+
+# rMATS generated annotation/count intermediates
+rmats_output*/fromGTF*.txt
+rmats_output*/JC.raw.input*.txt
+rmats_output*/JCEC.raw.input*.txt
